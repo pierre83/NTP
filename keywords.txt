@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For Ethernet
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+NTPClient	KEYWORD1
+ntp		KEYWORD1
+Ntp		KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getEpoch	KEYWORD2
+isDST		KEYWORD2
+localTime	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
