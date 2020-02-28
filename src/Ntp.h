@@ -7,16 +7,14 @@
 
 // Change as desired:
 #define NTP_SERVER_DEFAULT	"fr.pool.ntp.org"
+#define NTP_LATENCY			0	// NTP server-client Latency (secondes)
+#define MAX_RETRIES			2	// Warning if watchdog is used
 
 // DST settings (France), accord to yours
 #define DST_BEGIN_HOUR		2
 #define DST_END_HOUR		3
 #define DST_BEGIN_MONTH		3
 #define DST_END_MONTH		10
-
-// Change as desired:
-#define NTP_LATENCY			0	// NTP server-client Latency (secondes)
-#define MAX_RETRIES			2	// Warning if watchdog is used
 
 
 class NTPClient
