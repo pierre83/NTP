@@ -1,4 +1,4 @@
-// Arduino NTP client for WizNet5x00-based Ethernet shield
+// Arduino NTP library for WizNet5x00-based Ethernet shield
 // (c) Copyright 2019 Pierre CASAL
 // Released under Apache License, version 2.0
 
