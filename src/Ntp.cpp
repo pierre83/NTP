@@ -1,5 +1,5 @@
-// Arduino NTP client for WizNet W5x00-based Ethernet boards
-// (c) Copyright 2019 Pierre CASAL
+// Arduino NTP library for WizNet W5x00 based Ethernet boards
+// (c) Copyright 2020 Pierre CASAL
 // Released under Apache License, version 2.0
 
 #include <Arduino.h>
@@ -12,6 +12,7 @@
 
 // Return codes
 #define SUCCESS          1
+#define FAILED           0
 #define TIMED_OUT        -1
 #define BAD_RESPONSE	 -5
 
@@ -23,14 +24,14 @@
 
 static tmElements_t tm;          // Cache of time elements
 
-/*************************************************/
+// *************************************************
 void NTPClient::begin( const uint8_t timeZone, const uint16_t timeout)
 {
     nTimeZone  = timeZone;
     nNtpTimeout = timeout;		// Waiting for an answer from the NTP server 
 }
 
-/*************************************************/
+// *************************************************
 uint32_t NTPClient::getEpoch(const char* NTPServer)
 {
 	IPAddress NTPAddress;
@@ -40,10 +41,10 @@ uint32_t NTPClient::getEpoch(const char* NTPServer)
 			return getEpoch(NTPAddress);
 		}
 	}
-	return 0;
+	return FAILED;
 }
 	
-/*************************************************/
+// *************************************************
 uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
 {	
     uint8_t retries = 0;
@@ -114,7 +115,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
 }
 
 
-/*************************************************/
+// *************************************************
 bool NTPClient::isDST(uint32_t epoch)
 {
     // Equations by Wei-Hwa Huang (US), and Robert H. van Gent (EC)
@@ -142,14 +143,14 @@ bool NTPClient::isDST(uint32_t epoch)
 	return false;   // Winter time
 }
 
-/*************************************************/
+// *************************************************
 uint32_t NTPClient::localTime()
 {
 	uint32_t epoch = getEpoch(NTP_SERVER_DEFAULT);
 	return localTime(epoch);
 }
 
-/*************************************************/
+// *************************************************
 uint32_t NTPClient::localTime(uint32_t epoch)
 {
 	epoch += nTimeZone * 3600;    //  GMT + TIMEZONE

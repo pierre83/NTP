@@ -7,8 +7,7 @@
   For more on NTP time servers and the messages needed to communicate with them,
   see http://en.wikipedia.org/wiki/Network_Time_Protocol
 
-  created 25 Oct 2019
-  by Pierre Casal
+  February 2020 - Pierre Casal
 
   This code is in the public domain.
 
@@ -106,7 +105,7 @@ void loop()
 
   Serial.println(F("ntp.getEpoch(timeServerName)"));
   debut = millis();
-  epoch = ntp.getEpoch(timeServerName); // send an NTP packet to a time server
+  epoch = ntp.getEpoch(timeServerName); // Ask to a time server
   fin = millis();
   afficheTemps(fin - debut);
 
