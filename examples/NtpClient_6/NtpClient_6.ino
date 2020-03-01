@@ -60,6 +60,7 @@ void setup() {
     Serial.println("Configure using given IP address");
     int res = Ethernet.begin(mac, ip, myDns, myDns);
       if ( res != 1  ) {
+        Serial.println("Ethernet did not start, verify settings");
         while (true) {
           delay(1); // do nothing
         }
