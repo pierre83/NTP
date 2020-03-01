@@ -1,2 +1,8 @@
 NTP and daylight saving time library for Arduino
+================================================
+
+Sample NTP library, parameters are :
+    daylight savings time of your country,
+    Time zone of your country,
+    Your preferred NTP server.
 

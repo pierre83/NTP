@@ -74,7 +74,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
                 nUdp.write(packetBuffer, NTP_PACKET_SIZE);   // Writes UDP data to the TX buffer
                 result = nUdp.endPacket();        // Send the packet, Return an int: 1= send ok, -1= reset 5x00, 30= socket command failed, 31= send timeout
                 if ( result == SUCCESS ) {
-					//
+					// The packet has been sent, wait for reply..
 					result = TIMED_OUT;
                     uint32_t stopWait = millis() + nNtpTimeout;
                     while ( millis() < stopWait ) {
@@ -89,12 +89,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
                                 secsSince1900 |= packetBuffer[i];
                             }
                             epoch = secsSince1900 - SEVENTY_YEARS + NTP_LATENCY;
-                            /*if ( epoch < 1568000000 ) {   // Monday 9.16.2019
-                                result = BAD_RESPONSE;
-                                epoch = 0;
-                            } else {*/
-                                result = SUCCESS;
-                            //}
+                            result = SUCCESS;
 							break;	// exit if something received
                         }
 						delay(5);
