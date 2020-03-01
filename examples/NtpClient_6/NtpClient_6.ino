@@ -9,8 +9,6 @@
 
   February 2020 - Pierre Casal
 
-  This code is in the public domain.
-
 */
 
 #include <SPI.h>
@@ -22,7 +20,10 @@
 // Newer Ethernet shields have a MAC address printed on a sticker on the shield
 byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 
+
 const char timeServerName[] = "fr.pool.ntp.org";
+
+// Modify as needed:
 IPAddress timeServerIP = {192, 168, 0, 254 };
 const int DNS_TIMEOUT = 2500;
 const uint8_t TIMEZONE = 1;
@@ -56,9 +57,13 @@ void setup() {
   Serial.println("Initialize Ethernet with DHCP:");
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed to configure Ethernet using DHCP");
- //if ( 1 ) {
-    Serial.println("Configure using IP address instead of DHCP");
-    Ethernet.begin(mac, ip, myDns, myDns);
+    Serial.println("Configure using given IP address");
+    int res = Ethernet.begin(mac, ip, myDns, myDns);
+      if ( res != 1  ) {
+        while (true) {
+          delay(1); // do nothing
+        }
+    }
   }
   Serial.print("\tIP address ");
   Serial.println(Ethernet.localIP());
@@ -66,9 +71,9 @@ void setup() {
   // Check for Ethernet hardware present
   uint8_t hardware_type = Ethernet.hardwareStatus();
   if ( hardware_type == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    Serial.println("Ethernet shield was not found.");
     while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
+      delay(1); // do nothing
     }
   }
   else if ( hardware_type == EthernetW5500) {
@@ -81,7 +86,7 @@ void setup() {
   if (link_status == LinkOFF) {
     Serial.println("Ethernet cable is not connected.");
     while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
+      delay(1); // do nothing
     }
   }
   else if (link_status == LinkON) {
