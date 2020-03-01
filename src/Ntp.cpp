@@ -25,7 +25,7 @@
 static tmElements_t tm;          // Cache of time elements
 
 // *************************************************
-void NTPClient::begin( const uint8_t timeZone, const uint16_t timeout)
+void NTPClient::begin( const int timeZone, const uint16_t timeout)
 {
     nTimeZone  = timeZone;
     nNtpTimeout = timeout;		// Waiting for an answer from the NTP server 

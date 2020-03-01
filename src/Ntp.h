@@ -22,11 +22,11 @@ class NTPClient
 public:
 	
 	/** Begin NTP client
-	    @param Time Zone where the client belongs
+	    @param Time Zone where the client belongs (-x to +x)
 	    @param Timeout of the requests in seconds
 	    @result none
 	*/
-	void begin(const uint8_t timeZone, const uint16_t timeout = 2000);
+	void begin(const int timeZone = 0, const uint16_t timeout = 2000);
 
 	/** Connect to the remote NTP server and request for epoch
 	    @param NTP Server IP address 
@@ -66,7 +66,7 @@ public:
 protected:
 
 	uint16_t nNtpTimeout;
-	uint8_t nTimeZone;
+	int nTimeZone;
 	EthernetUDP nUdp;
 };
 
