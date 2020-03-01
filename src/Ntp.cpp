@@ -153,7 +153,8 @@ uint32_t NTPClient::localTime()
 // *************************************************
 uint32_t NTPClient::localTime(uint32_t epoch)
 {
-	epoch += nTimeZone * 3600;    //  GMT + TIMEZONE
+	if ( epoch == 0 ) return 0;
+    epoch += nTimeZone * 3600;    //  GMT + TIMEZONE
 	if ( isDST(epoch) == true ) {
 		epoch += 3600;   // Summer time
 	}
