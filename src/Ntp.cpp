@@ -14,7 +14,6 @@
 #define SUCCESS          1
 #define FAILED           0
 #define TIMED_OUT        -1
-#define BAD_RESPONSE	 -5
 
 // NTP
 #define NTP_PACKET_SIZE		48
