@@ -35,11 +35,15 @@ uint32_t NTPClient::getEpoch(const char* NTPServer)
 {
 	IPAddress NTPAddress;
 	DNSClient dns;
-	if ( dns.begin(Ethernet.dnsServerIP() ) == SUCCESS ) {		// Récupération de l'@IP du DNS déclaré dans Ethernet.begin(xxx))
-		if ( dns.getHostByName(NTPServer, NTPAddress) == SUCCESS ) {
+	int ret = dns.begin(Ethernet.dnsServerIP());
+	if ( ret == SUCCESS ) {		// Récupération de l'@IP du DNS déclaré dans Ethernet.begin(xxx))
+		ret = dns.getHostByName(NTPServer, NTPAddress);
+		if ( ret == SUCCESS ) {
+			//Serial.println("DNS success");
 			return getEpoch(NTPAddress);
 		}
 	}
+	//Serial.print("DNS failed: ");	Serial.println(ret);
 	return FAILED;
 }
 	
@@ -64,7 +68,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
 #endif
 
 	// Find a socket to use
-    int result = nUdp.begin(1024+(millis() & 0x03FF));
+    int result = nUdp.begin();
     if ( result == SUCCESS ) {
 		// Successful get socket
 		while ( retries < MAX_RETRIES ) {
@@ -120,21 +124,21 @@ bool NTPClient::isDST(uint32_t epoch)
     // Equations by Wei-Hwa Huang (US), and Robert H. van Gent (EC)
     // European Economic Community: Since 1996, valid through 2099
 	
-	// year contained in the given epoch is offset from 1970
-    breakTime(epoch, tm);    // breakTime gives the date corresponding to epoch in tm_elements
+    breakTime(epoch, tm);    // breakTime gives the date corresponding to epoch(from 1970) in tm_elements
 
+	int year = 1970 + tm.Year;	// year contained in the given epoch is offset from 1970
 	tm.Month = DST_BEGIN_MONTH;
-	tm.Day = 31 - (((5 * tm.Year) / 4) + 4) % 7;  // last sunday of march
+	tm.Day = 31 - (((5 * year) / 4) + 4) % 7;  // last sunday of march
 	tm.Hour = DST_BEGIN_HOUR;
 	tm.Second = 0;
 	uint32_t DST_epoch = makeTime(tm);  // makeTime gives the corresponding epoch to DST START time
-
 	if ( epoch >= DST_epoch ) {
+		tm.Year = year - 1970;
 		tm.Month = DST_END_MONTH;
-		tm.Day = 31 - (((5 * tm.Year) / 4) + 1) % 7;     // last sunday of october
+		tm.Day = 31 - (((5 * year) / 4) + 1) % 7;     // last sunday of october
 		tm.Hour = DST_END_HOUR;
+		tm.Second = 0;
 		DST_epoch = makeTime(tm);  // makeTime gives the corresponding epoch to DST END time
-
 		if ( epoch < DST_epoch ) {
 			return true;  // Summer time
 		}
