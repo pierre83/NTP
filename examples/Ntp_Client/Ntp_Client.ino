@@ -15,22 +15,25 @@
 #include <Ethernet.h>
 #include <TimeLib.h>
 #include <Ntp.h>
+#include "..\tools\Ethernet_W5x00\Init_W5x00\Init_W5x00.ino"
 
-// Enter a MAC address for your controller below.
-// Newer Ethernet shields have a MAC address printed on a sticker on the shield
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-
-
+//------------------------------------------------------------
+// CHANGE AS DESIRED:
 const char timeServerName[] = "fr.pool.ntp.org";
-
-// Modify as needed:
 IPAddress timeServerIP = {192, 168, 0, 254 };
-const int DNS_TIMEOUT = 2500;
+
 const uint8_t TIMEZONE = 1;
 
-// Set the static IP address to use if the DHCP fails to assign
+uint8_t mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+
 IPAddress ip(192, 168, 0, 56);
 IPAddress myDns(192, 168, 0, 254);
+
+bool dhcp = 1;  // 0= fixed IP, 1 = DHCP
+
+const int DNS_TIMEOUT = 2500;
+//------------------------------------------------------------
+
 
 NTPClient ntp;
 
@@ -38,71 +41,18 @@ tmElements_t tm;
 
 
 
-void setup() {
-  // You can use Ethernet.init(pin) to configure the CS pin
-  //Ethernet.init(10);  // Most Arduino shields
-  //Ethernet.init(5);   // MKR ETH shield
-  //Ethernet.init(0);   // Teensy 2.0
-  //Ethernet.init(20);  // Teensy++ 2.0
-  //Ethernet.init(15);  // ESP8266 with Adafruit Featherwing Ethernet
-  //Ethernet.init(33);  // ESP32 with Adafruit Featherwing Ethernet
-
+void setup()
+{
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-   // start the Ethernet connection:
-  Serial.println("Initialize Ethernet with DHCP:");
-  uint32_t deb = millis();
-  if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed to configure Ethernet using DHCP");
-    Serial.println("Configure using given IP address");
-    Ethernet.begin(mac, ip, myDns, myDns);
-    int res = Ethernet.begin(mac, ip, myDns, myDns);
-      if ( res != 1  ) {
-        Serial.println("Ethernet did not start, verify settings");
-        while (true) {
-          delay(1); // do nothing
-        }
-    }
-  }
-  uint32_t fin = millis();
-  Serial.print(F("\tTemps DHCP "));       Serial.print(fin-deb);
-  Serial.print(F("ms\n\tIP address "));       Serial.println(Ethernet.localIP());
-  Serial.print(F("\tIP gateway "));       Serial.println(Ethernet.gatewayIP());
-  Serial.print(F("\tIP subnet mask "));   Serial.println(Ethernet.subnetMask());
-  Serial.print(F("\tIP DNS "));           Serial.println(Ethernet.dnsServerIP());
+  // start the Ethernet connection:
+  Ethernet_init( dhcp, mac, ip, myDns);
 
-  // Check for Ethernet hardware present
-  uint8_t hardware_type = Ethernet.hardwareStatus();
-  if ( hardware_type == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.");
-    while (true) {
-      delay(1); // do nothing
-    }
-  }
-  else if ( hardware_type == EthernetW5500) {
-    Serial.println("Ethernet type W5500");
-  }
-  else if ( hardware_type == EthernetW5100) {
-    Serial.println("Ethernet type W5100");
-  }
-  uint8_t link_status = Ethernet.linkStatus();
-  if (link_status == LinkOFF) {
-    Serial.println("Ethernet cable is not connected.");
-    while (true) {
-      delay(1); // do nothing
-    }
-  }
-  else if (link_status == LinkON) {
-    Serial.println("Ethernet cable is connected");
-  }
-  else if (link_status == Unknown) {
-    Serial.println("If DHCP ok, maybe W5100 otherwise Ethernet cable is NOT connected");
-  }
-  
+  // Start NTP
   ntp.begin(TIMEZONE, DNS_TIMEOUT);
 }
 

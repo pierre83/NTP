@@ -7,12 +7,14 @@
 
 // Change as desired:
 #define NTP_SERVER_DEFAULT	"fr.pool.ntp.org"
-#define NTP_LATENCY			0	// NTP server-client Latency (secondes)
-#define MAX_RETRIES			2	// Warning if watchdog is used
+#define NTP_LATENCY			0		// NTP server-client Latency (secondes)
 
-// DST settings (France), accord to yours
-#define DST_BEGIN_HOUR		2
-#define DST_END_HOUR		3
+#define	NTP_TIMEOUT			7500	// Warning if WDT used
+#define	REPLY_TIMEOUT		2400	// Warning if too low
+
+// DST settings
+#define DST_BEGIN_HOUR		1
+#define DST_END_HOUR		1
 #define DST_BEGIN_MONTH		3
 #define DST_END_MONTH		10
 
@@ -23,10 +25,10 @@ public:
 	
 	/** Begin NTP client
 	    @param Time Zone where the client belongs (-x to +x)
-	    @param Timeout of the requests in seconds
+	    @param Timeout of the request in seconds, upto 7.5sec by default(does'nt include DNS time)
 	    @result none
 	*/
-	void begin(const int timeZone = 0, const uint16_t timeout = 2000);
+	void begin(const int timeZone = 0, const uint16_t timeout = REPLY_TIMEOUT);
 
 	/** Connect to the remote NTP server and request for epoch
 	    @param NTP Server IP address 
@@ -42,7 +44,7 @@ public:
 	*/
 	uint32_t getEpoch(const char* NTPServer = NTP_SERVER_DEFAULT);
 
-	/** Calculate if epoch should be in DST mode or not
+	/** Calculate if epoch is in DST window or not
 	    @param epoch
 	    @param 
 	    @result 1 if DST else 0
@@ -67,7 +69,7 @@ protected:
 
 	uint16_t nNtpTimeout;
 	int nTimeZone;
-	EthernetUDP nUdp;
+	EthernetUDP ntpUdp;
 };
 
 #endif
