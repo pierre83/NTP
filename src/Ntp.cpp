@@ -36,7 +36,7 @@ uint32_t NTPClient::getEpoch(const char* NTPServer)
 {
 	IPAddress NTPAddress;
 	DNSClient dns;
-	int ret = dns.begin(Ethernet.dnsServerIP());	// Récupération de l'@IP du DNS déclaré dans Ethernet.begin(xxx))
+	int ret = dns.begin(Ethernet.dnsServerIP());	// Get the DNS @IP provided in Ethernet.begin(xxx))
 	if ( ret == SUCCESS ) {
 		ret = dns.getHostByName(NTPServer, NTPAddress);
 		if ( ret == SUCCESS ) {
@@ -44,7 +44,7 @@ uint32_t NTPClient::getEpoch(const char* NTPServer)
 			return getEpoch(NTPAddress);
 		}
 	}
-	//Serial.print("DNS failed: ");	Serial.println(ret);
+	//Serial.print("DNS failed: ");	//Serial.println(ret);
 	return FAILED;
 }
 	
@@ -65,8 +65,8 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
     packetBuffer[14] = 49;
     packetBuffer[15] = 52;
     
-    if ( nNtpTimeout < REPLY_TIMEOUT ) {
-        nNtpTimeout = REPLY_TIMEOUT;
+    if ( nNtpTimeout < REPLY_TIMEOUT ) {		// Verify that total timeout is
+        nNtpTimeout = REPLY_TIMEOUT;			// compatible the a request timeout
         operation_timeout = REPLY_TIMEOUT;
     }
 	
@@ -76,13 +76,17 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
 		result = ntpUdp.begin();	//		Return: 0= no socket, 1= success
 		if ( result == SUCCESS ) {
 			// Successful get socket
+			//Serial.println("ntpUdp.begin");
             result = ntpUdp.beginPacket( NTPAddress, NTP_PORT );   // Return 1= success, 0= bad IP, no socket
             if ( result == SUCCESS ) {
 				// Configure destination ip address and port OK
+				//Serial.println("ntpUdp.beginPacket");
                 ntpUdp.write(packetBuffer, NTP_PACKET_SIZE);   // Writes UDP data to the TX buffer
                 result = ntpUdp.endPacket();        // Send the packet, Returns 1= success, -1= W5x00 fail, 0= timeout
+				//Serial.print("ntpUdp.endPacket: ");	//Serial.println(result);
                 if ( result == SUCCESS ) {
 					// The packet has been sent, wait for reply..
+					//Serial.println("ntpUdp.endPacket");
 					result = TIMED_OUT;
                     uint32_t stopWait = millis() + nNtpTimeout;
                     while ( millis() < stopWait ) {
@@ -90,6 +94,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
                         packetSize = ntpUdp.parsePacket();
                         if ( packetSize >= NTP_PACKET_SIZE ) {
 							// We've got something
+							//Serial.println("ntpUdp.parsePacket");
                             ntpUdp.read(packetBuffer, NTP_PACKET_SIZE);
                             uint32_t secsSince1900 = 0;
                             for (uint8_t i = 40; i < 44; i++) {
@@ -98,7 +103,7 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
                             }
                             epoch = secsSince1900 - SEVENTY_YEARS + NTP_LATENCY;
                             result = SUCCESS;
-							break;
+							break;		// We get something => exit
                         }
 						delay(5);
 					}
@@ -106,15 +111,15 @@ uint32_t NTPClient::getEpoch(IPAddress& NTPAddress)
             }
 			ntpUdp.stop();        // Close the socket
 			if ( result == SUCCESS ) break;	// exit if SUCCESS
-			delay(100);
+			//delay(50);
         }
-       delay(50);
+       delay(100);
     }
 #if 0
 	uint32_t stop = millis();
-    Serial.print("epoch\t");		Serial.println(epoch);
-    Serial.print("Elapsed\t");		Serial.println(stop - (endWait - operation_timeout));
-    Serial.print("Result\t");		Serial.println(result);
+    //Serial.print("epoch\t");		//Serial.println(epoch);
+    //Serial.print("Elapsed\t");		//Serial.println(stop - (endWait - operation_timeout));
+    //Serial.print("Result\t");		//Serial.println(result);
 #endif
     return epoch;		// GMT time
 }
@@ -163,7 +168,7 @@ uint32_t NTPClient::localTime(uint32_t epoch)
 		epoch += 3600;   // Summer time
 	}
     epoch += nTimeZone * 3600;    //  GMT + TIMEZONE
-    //Serial.printf("epoch: %lu\n", epoch);
+    ////Serial.printf("epoch: %lu\n", epoch);
 	return epoch;
 }
 

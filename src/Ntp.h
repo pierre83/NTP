@@ -9,7 +9,11 @@
 #define NTP_SERVER_DEFAULT	"fr.pool.ntp.org"
 #define NTP_LATENCY			0		// NTP server-client Latency (secondes)
 
+// Timeout and retries
+// Total time allowed to get an answer, permitting retries
+// Here 3 x REPLY_TIMEOUT <= NTP_TIMEOUT => 3 retries at the minimum
 #define	NTP_TIMEOUT			7500	// Warning if WDT used
+// Time allowed for a NTP server answer after a request
 #define	REPLY_TIMEOUT		2400	// Warning if too low
 
 // DST settings
